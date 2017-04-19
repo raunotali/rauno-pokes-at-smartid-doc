@@ -118,7 +118,10 @@ There are two custom status codes which are specific to this interface:
 ### 4.1.4. Response on successful session creation
 
 This response is returned from all POST method calls that create a new session.
-ParameterTypeMandatoryDescriptionsessionIDstring+A string that can be used to request operation result, see below.
+
+Parameter | Type | Mandatory | Description
+----------|------|-----------|------------
+sessionID | string | + | A string that can be used to request operation result, see below.
 
 **successful session creation response:**
 ```
@@ -144,8 +147,10 @@ When requestor wants, it can override the idempotent behaviour inside of this ti
 
 ## 4.3. Certificate choice session
 
-
-**Method****URL**POSTBASE/certificatechoice/pno/:country/:national-identity-numberPOSTBASE/certificatechoice/document/:documentnumber
+Method | URL
+-------|----
+POST | BASE/certificatechoice/pno/:country/:national-identity-number
+POST | BASE/certificatechoice/document/:documentnumber
 
 
 Initiates certificate choice between multiple signing certificates the user may hold on his/her different mobile devices.
@@ -172,8 +177,15 @@ This method initiates a certificate (device) choice dialogue on end user's devic
 * HTTP error code 404 - object described in URL was not found, essentially meaning that the user does not have account in Smart-ID system.
 
 ### 4.3.4. Request parameters
-ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**noncestringRandom string, up to 30 characters. If present, must have at least 1 character.
-**Certificate choice request**
+
+Parameter | Type | Mandatory | Description
+----------|------|-----------|------------
+relyingPartyUUID | string | + | UUID of Relying Party
+relyingPartyName | string | + | RP friendly name, one of those configured for particular RP
+certificateLevel | string |   | Level of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**
+nonce | string |   | Random string, up to 30 characters. If present, must have at least 1 character.
+
+**Certificate choice request:**
 ```
 {
 	"relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -183,7 +195,7 @@ ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying Partyrel
 ```
 ### 4.3.5. Example response
 
-**Certificate choice session creation response**
+**Certificate choice session creation response:**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546014"
@@ -193,9 +205,10 @@ ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying Partyrel
 
 ## 4.4. Authentication session
 
-
-**Method****URL**POSTBASE/authentication/pno/:country/:national-identity-numberPOSTBASE/authentication/document/:documentnumber
-
+Method | URL
+-------|----
+POST | BASE/authentication/pno/:country/:national-identity-number
+POST | BASE/authentication/document/:documentnumber
 
 This method is the main entry point to authentication logic.
 
@@ -218,12 +231,16 @@ It selects user's authentication key as the one to be used in the process.
 
 ### 4.4.4. Authentication request parameters
 
+Parameter | Type | Mandatory | Description
+----------|------|-----------|------------
+relyingPartyUUID | string | + | UUID of Relying Party
+relyingPartyName | string | + | RP friendly name, one of those configured for particular RP
+certificateLevel | string |   | Level of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**
+hash | string | + | Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.
+displayText | string |  | Text to display for authentication consent dialog on the mobile device
+nonce | string |   | Random string, up to 30 characters. If present, must have at least 1 character.
 
-ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**hashstring+Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.displayTextstring
-Text to display for authentication consent dialog on the mobile device
-noncestringRandom string, up to 30 characters. If present, must have at least 1 character.
-
-**Authentication request**
+**Authentication request:**
 ```
 {
    "relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -235,21 +252,21 @@ noncestringRandom string, up to 30 characters. If present, must have at least 1 
 }
 ```
 
-
 ### 4.4.5. Example response
 
-**Authentication session creation response**
+**Authentication session creation response:**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546015"
 }
 ```
 
-
 ## 4.5. Signing session
 
-
-**Method****URL****Notes**POSTBASE/signature/document/:documentnumberPOSTBASE/signature/pno/:country/:national-identity-number**See description below, this method must be used with care.**
+ Method | URL | Notes
+ -------|-----|------
+ POST | BASE/signature/document/:documentnumber | 
+ POST | BASE/signature/pno/:country/:national-identity-number | **See description below, this method must be used with care.**
 
 
 This method is the main entry point to signature logic.
@@ -276,9 +293,17 @@ There are two main modes of signature operation and Relying Party must choose ca
 * HTTP error code 404 - object described in URL was not found, essentially meaning that the user does not have account in Smart-ID system.
 
 ### 4.5.4. Request parameters 
-ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**hashstring+Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.displayTextstringText to display for signature consent dialog on the mobile devicenoncestringRandom string, up to 30 characters. If present, must have at least 1 character.
+
+Parameter | Type | Mandatory | Description
+----------|------|-----------|------------
+relyingPartyUUID | string | + | UUID of Relying Party
+relyingPartyName | string | + | RP friendly name, one of those configured for particular RP
+certificateLevel | string |   | Level of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**
+hash | string | + | Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.
+displayText | string |  | Text to display for authentication consent dialog on the mobile device
+nonce | string |   | Random string, up to 30 characters. If present, must have at least 1 character.
  
-**Signature request**
+**Signature request:**
 ```
 {
    "relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -290,25 +315,23 @@ ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying Partyrel
 }
 ```
 
-
 ### 4.5.5. Example response
 
-**Signature session creation response**
+**Signature session creation response:**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546016"
 }
 ```
 
-
 ## 4.6. Session status
 
+Method | URL
+-------|----
+GET | BASE/session/:sessionId
 
-**Method****URL**GETBASE/session/:sessionId
 **Query parameter****Contents**timeoutMs
 Request long poll timeout value in milliseconds. If not provided, a default is used. Server configuration may force this value into a certain range, see server configuration documentation for details.
-
-
 
 This method can be used to retrieve session result from Smart-ID backend.
 
@@ -332,18 +355,21 @@ Example URL:
 
 ### 4.6.4. Response structure 
 
+Parameter | Type | Mandatory | Description
+----------|------|-----------|------------
+state | string | + | State of request. "RUNNING"/"COMPLETE". There are only two possible status codes for now.
+result | object |  | Structure describing end result, may be empty or missing when still running
+result.endResult | string | + | End result of the transaction. Refer to the subsection below.
+result.documentNumber | string | for OK | Document number, can be used in further signature and authentication requests to target the same device.
+signature | object |   | Structure describing the signature result, if any.
+signature.value | string | + | Signature value, base64 encoded.
+signature.algorithm | string | + | Signature algorithm, in the form of sha256WithRSAEncryption
+cert | object | for OK | Structure describing the certificate related to request.
+cert.value | string | + | Certificate value, DER+Base64 encoded.
+cert.assuranceLevel | string |   | **DEPRECATED. **Please use cert.certificateLevel parameter instead.
+cert.certificateLevel | string | + | Level of Smart-ID certificate: **ADVANCED** - Used for Smart-ID basic. **QUALIFIED** - Used for Smart-ID. This means that issued certificate is qualified.
 
-ParameterTypeMandatoryDescriptionstatestring+State of request. "RUNNING"/"COMPLETE". There are only two possible status codes for now.resultobjectStructure describing end result, may be empty or missing when still runningresult.endResultstring+End result of the transaction. Refer to the subsection below.result.documentNumberstringfor OKDocument number, can be used in further signature and authentication requests to target the same device.signatureobjectStructure describing the signature result, if any.signature.valuestring+Signature value, base64 encoded.signature.algorithmstring+Signature algorithm, in the form of sha256WithRSAEncryptioncertobjectfor OKStructure describing the certificate related to request.cert.valuestring+Certificate value, DER+Base64 encoded.cert.assuranceLevelstring
-**DEPRECATED. **Please use cert.certificateLevel parameter instead.
-cert.certificateLevelstring+
-Level of Smart-ID certificate:
-
-ADVANCED - Used for Smart-ID basic.
-
-QUALIFIED - Used for Smart-ID. This means that issued certificate is qualified.
-
-
-**successful response when still waiting for user's response**
+**successful response when still waiting for user's response:**
 ```
 {
     "state": "RUNNING",
@@ -351,7 +377,7 @@ QUALIFIED - Used for Smart-ID. This means that issued certificate is qualified.
 }
 ```
 
-**successful response after completion**
+**successful response after completion:**
 ```
 {
     "state": "COMPLETE",
@@ -378,8 +404,6 @@ QUALIFIED - Used for Smart-ID. This means that issued certificate is qualified.
 * **USER_REFUSED** - user refused the session.
 * **TIMEOUT** - there was a timeout, i.e. end user did not confirm or refuse the operation within given timeframe.
 * **DOCUMENT_UNUSABLE** - for some reason, this RP request cannot be completed. User must either check his/her Smart-ID mobile application or turn to customer support for getting the exact reason.
-
-
 
 # 6. Protocols
 
