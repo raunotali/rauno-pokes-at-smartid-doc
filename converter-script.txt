@@ -1,0 +1,57 @@
+(defun replace-tag(tag target)
+  (progn
+    (setq start-tag (concat "<" tag ">"))
+    (setq end-tag (concat "</" tag ">"))
+    (beginning-of-buffer)
+    (replace-string start-tag (concat "
+" target))
+    (beginning-of-buffer)
+    (replace-string end-tag "
+")
+    ))
+
+(defun replace-inline(tag target-start target-end)
+  (progn
+    (setq start-tag (concat "<" tag ">"))
+    (setq end-tag (concat "</" tag ">"))
+    (beginning-of-buffer)
+    (replace-string start-tag target-start)
+    (beginning-of-buffer)
+    (replace-string end-tag target-end)
+    ))
+
+(defun reasonableize-quotation-marks()
+  "oh my god."
+  (progn
+    (beginning-of-buffer)
+    (replace-string "“" "\"")
+    (beginning-of-buffer)
+    (replace-string "”" "\"")
+    (beginning-of-buffer)
+    (replace-string "’" "\'")
+    (beginning-of-buffer)
+    (replace-string "&quot;" "\"")
+    ))
+
+(defun clear-all-xml-tags()
+  (progn
+    (beginning-of-buffer)
+    (replace-regexp "<[^>]+>" "")
+    ))
+
+(defun from-confluence-to-github-markdown()
+  "ver 1.0"
+  (interactive)
+  (progn
+    (replace-tag "p" "")
+    (replace-tag "h1" "# ")
+    (replace-tag "h2" "## ")
+    (replace-tag "h3" "### ")
+    (replace-tag "li" "* ")
+    (replace-inline "strong" "**" "**")
+    (replace-inline "pre" "```
+" "
+```")
+    (clear-all-xml-tags)
+    (reasonableize-quotation-marks)
+    ))
