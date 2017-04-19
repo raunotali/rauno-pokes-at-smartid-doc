@@ -1,3 +1,5 @@
+# Table of Contents
+
 * [1. Introduction](#1-introduction)
     * [1.1. Terminology](#11-terminology)
 * [2. References](#2-references)
