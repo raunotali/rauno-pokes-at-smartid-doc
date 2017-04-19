@@ -143,7 +143,7 @@ When requestor wants, it can override the idempotent behaviour inside of this ti
 
 ## 4.2. REST API main flows
 
- Smart-ID Relying Party integration guide and API specification 6.0 > RP_API_sequences_REST.png" data-location="Smart-ID Collaboration > Smart-ID Relying Party integration guide and API specification 6.0 > RP_API_sequences_REST.png" data-image-height="1380" data-image-width="1167">
+![RP API sequences](https://github.com/raunotali/rauno-pokes-at-smartid-doc/blob/master/images/RP_API_sequences_REST.png)
 
 ## 4.3. Certificate choice session
 
