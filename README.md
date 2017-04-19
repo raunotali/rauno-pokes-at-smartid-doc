@@ -119,7 +119,8 @@ There are two custom status codes which are specific to this interface:
 
 This response is returned from all POST method calls that create a new session.
 ParameterTypeMandatoryDescriptionsessionIDstring+A string that can be used to request operation result, see below.
- 
+
+**successful session creation response:**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546014"
@@ -172,6 +173,7 @@ This method initiates a certificate (device) choice dialogue on end user's devic
 
 ### 4.3.4. Request parameters
 ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**noncestringRandom string, up to 30 characters. If present, must have at least 1 character.
+**Certificate choice request**
 ```
 {
 	"relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -181,7 +183,7 @@ ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying Partyrel
 ```
 ### 4.3.5. Example response
 
-
+**Certificate choice session creation response**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546014"
@@ -220,6 +222,8 @@ It selects user's authentication key as the one to be used in the process.
 ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**hashstring+Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.displayTextstring
 Text to display for authentication consent dialog on the mobile device
 noncestringRandom string, up to 30 characters. If present, must have at least 1 character.
+
+**Authentication request**
 ```
 {
    "relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -234,7 +238,7 @@ noncestringRandom string, up to 30 characters. If present, must have at least 1 
 
 ### 4.4.5. Example response
 
-
+**Authentication session creation response**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546015"
@@ -274,8 +278,7 @@ There are two main modes of signature operation and Relying Party must choose ca
 ### 4.5.4. Request parameters 
 ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying PartyrelyingPartyNamestring+RP friendly name, one of those configured for particular RPcertificateLevelstringLevel of certificate requested. "ADVANCED"/"QUALIFIED". **Defaults to "QUALIFIED".**hashstring+Base64 encoded hash function output to be signed.hashTypestring+Hash algorithm. See hash algorithm section.displayTextstringText to display for signature consent dialog on the mobile devicenoncestringRandom string, up to 30 characters. If present, must have at least 1 character.
  
-
- 
+**Signature request**
 ```
 {
    "relyingPartyUUID": "de305d54-75b4-431b-adb2-eb6b9e546014",
@@ -290,7 +293,7 @@ ParameterTypeMandatoryDescriptionrelyingPartyUUIDstring+UUID of Relying Partyrel
 
 ### 4.5.5. Example response
 
-
+**Signature session creation response**
 ```
 {	
       "sessionID": "de305d54-75b4-431b-adb2-eb6b9e546016"
@@ -340,14 +343,15 @@ ADVANCED - Used for Smart-ID basic.
 QUALIFIED - Used for Smart-ID. This means that issued certificate is qualified.
 
 
-
+**successful response when still waiting for user's response**
 ```
 {
     "state": "RUNNING",
     "result": {}
 }
 ```
- 
+
+**successful response after completion**
 ```
 {
     "state": "COMPLETE",
@@ -388,6 +392,7 @@ Previous sections give the overview of the specific API methods, which can be us
 The RP must create the new hash value for each new authentication request. The recommended way of doing this is to use the Java SecureRandom class (https://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html) or equivalent method in other programming languages, to generated random value for each new authentication request.
 
 For example, the following code snippet generates the 64 random bytes and computes the hash value and encodes it in Base64.
+
 ```
     SecureRandom random = new SecureRandom();
     byte randBytes[] = new byte[64];
@@ -397,17 +402,16 @@ For example, the following code snippet generates the 64 random bytes and comput
 	byte[] hash = md.digest();
 	byte[] encodedHash = Base64.encodeBase64(hash);
 ```
+
 The value of the 'encodedHash' must be recorded in the current user's session for later comparison.
 
 ### 6.1.2. Computing the verification code
 
 The RP must then compute the verification code for this authentication request, so that user can bind together the session on the browser and the authentication request on the Smart-ID app. The VC is computed as
 
-
 ```
 integer(SHA256(hash)[−2:−1]) mod 10000
 ```
-
 
 where we take SHA256 result, extract 2 rightmost bytes from it, interpret them as a big-endian unsigned integer and take the last 4 digits in decimal for display. SHA256 is always used here, no matter what was the algorithm used to calculate hash.
 
@@ -426,8 +430,6 @@ After receiving the transaction response from the getRequestResult() API call, t
 * The identity of the authenticated person is in the 'subject' field of the included X.509 certificate.
 
 After successful authentication, the RP must invalidate the old user's browser or API session identifier and generate a new one.
-
-
 
 # 7. Known issues
 
