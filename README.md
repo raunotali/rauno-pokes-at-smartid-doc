@@ -5,21 +5,17 @@ Relying Party interface offers the entry point to Smart-ID main use cases, i.e. 
 
 The interface is to be used by all parties who wish consume Smart-ID services, i.e. ask end users to perform authentication and signing operations.
 
-Cybernetica AS reference: Y-952-4, version 6.0.
+*Cybernetica AS reference: Y-952-4, version 6.0.*
 
 ## Terminology
 
 * **Document number** - A unique number given to end user accounts in Smart-ID system, identifies a particular set of end user cryptographic key pairs with their certificates.
-
 * **Relying Party (RP)** - a provider of some kind of e-service (like an internet banking site or government agency website), or, technically, that same e-service. Relying Party authenticates users via Smart-ID service and requests digital certificates from them.
-
 * **Session** - Alternatively, "RP Request". A process initated by Relying Party, which contains a single certificate choice, authentication or signing operation.
 
 # References
 
 * R. Fielding et al. Hypertext Transfer Protocol – HTTP/1.1. RFC 2616 (Draft Standard). Internet Engineering Task Force, June 1999. URL: http://www.ietf.org/rfc/rfc2616.txt.
-
-
 
 # General description
 
@@ -55,47 +51,28 @@ It is essential that RP performs all the required checks when connecting to the 
 
 The RP must do the following checks:
 
-* Verify if the HTTPS connection and the TLS handshake is performed with the secure TLS ciphersuite.
-
-* Verify that the X.509 certificate of the HTTPS endpoint belongs to the well-known public key of the Smart-ID API. The RP must implement HTTPS pinning (https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning)
-
-* Verify that the X.509 certificate of the HTTPS endpoint is valid (not expired, signed by trusted CA and not revoked)
+1. Verify if the HTTPS connection and the TLS handshake is performed with the secure TLS ciphersuite.
+1. Verify that the X.509 certificate of the HTTPS endpoint belongs to the well-known public key of the Smart-ID API. The RP must implement HTTPS pinning (https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning)
+1. Verify that the X.509 certificate of the HTTPS endpoint is valid (not expired, signed by trusted CA and not revoked)
 
 In case the RP fails to verify the connection security and the attacks is able to launch MITM attack (https://en.wikipedia.org/wiki/Man-in-the-middle_attack) on the connection and circumvent the connection authentication, the following attack is possible:
 
-* End user connects to the RP website and asks for the authentication with the Smart-ID.
-
-* RP connects to the authentication API endpoint, but attacker is able to MITM the connection and answer himself.
-
-* RP sends the correctly formed authentication request with randomly generated hash (h1) to the attacker, acting as the Smart-ID API.
-
-* Attacker creates another connection to the RP website and asks for the authentication with the Smart-ID, under the identity of same end user.
-
-* RP connects to the authentication API endpoint, but attacker is able MITM the connection and answer himself.
-
-* RP sends the correctly formed authentication request with randomly generated hash (h2) to the attacker, acting as the Smart-ID API.
-
-* Attacker computes the VC values for both hashes, i.e.
-* vc1 = integer(SHA256(h1)[−2:−1]) mod 10000
-
-* vc2 = integer(SHA256(h2)[−2:−1]) mod 10000
-
-
-* If the vc1 != vc1, the attacker drops the connection to the RP website and creates a new one. The connections are tried until the randomly generated hash value yields the same VC value as the vc1. It should take about 5000 tries, before such collision is found.
-
-* The attacker sends the authentication request with the hash value h2 to the Smart-ID authentication API endpoint.
-
-* Smart-ID sends the authentication request to the end user mobile device and asks to verify the VC.
-
-* End user compares the vc1 displayed on the browser to the vc2 displayed on the mobile device and finds that they are equivalent and consents to the authentication.
-
-* Attacker receives the authentication response from the Smart-ID API and returns this to the RP connected, associated with the attacker's session.
-
-* RP receives the authentication response with the signature on the hash h2, verifies that the signature is valid and creates authenticated session for the attacker, under the end user identity.
-
-* The attacker is logged in as the end user.
-
-
+1. End user connects to the RP website and asks for the authentication with the Smart-ID.
+1. RP connects to the authentication API endpoint, but attacker is able to MITM the connection and answer himself.
+1. RP sends the correctly formed authentication request with randomly generated hash (h1) to the attacker, acting as the Smart-ID API.
+1. Attacker creates another connection to the RP website and asks for the authentication with the Smart-ID, under the identity of same end user.
+1. RP connects to the authentication API endpoint, but attacker is able MITM the connection and answer himself.
+1. RP sends the correctly formed authentication request with randomly generated hash (h2) to the attacker, acting as the Smart-ID API.
+1. Attacker computes the VC values for both hashes, i.e.
+  1. vc1 = integer(SHA256(h1)[−2:−1]) mod 10000
+  1. vc2 = integer(SHA256(h2)[−2:−1]) mod 10000
+1. If the vc1 != vc1, the attacker drops the connection to the RP website and creates a new one. The connections are tried until the randomly generated hash value yields the same VC value as the vc1. It should take about 5000 tries, before such collision is found.
+1. The attacker sends the authentication request with the hash value h2 to the Smart-ID authentication API endpoint.
+1. Smart-ID sends the authentication request to the end user mobile device and asks to verify the VC.
+1. End user compares the vc1 displayed on the browser to the vc2 displayed on the mobile device and finds that they are equivalent and consents to the authentication.
+1. Attacker receives the authentication response from the Smart-ID API and returns this to the RP connected, associated with the attacker's session.
+1. RP receives the authentication response with the signature on the hash h2, verifies that the signature is valid and creates authenticated session for the attacker, under the end user identity.
+1. The attacker is logged in as the end user.
 
 # REST API
 
@@ -114,9 +91,7 @@ Session is identified by an ID, in reality a long random string.
 Session is created for one of the three operations:
 
 * Authentication
-
 * Signing certificate choice (needed for certain digital signature schemes, see below)
-
 * Signing 
 
 Session result can be obtained using a GET request described below.
@@ -124,9 +99,7 @@ Session result can be obtained using a GET request described below.
 ### REST object references
 
 * Objects referenced by "pno/:country/:national-identity-number" are natural persons identified by their ETSI PNO-type identifier (i.e. PNOEE-12345 becomes pno/EE/12345)
-* Please not that the country code here conforms to ISO 3166-1 alpha-2 code and as such **must me in upper case**.
-
-
+  * Please not that the country code here conforms to ISO 3166-1 alpha-2 code and as such **must me in upper case**.
 * Objects referenced by "document/:documentnumber" are particular documents (also known as user accounts) in the Smart-ID system.
 
 ### HTTP status code usage
@@ -140,7 +113,6 @@ All 5xx series error codes indicate some kind of fatal server error.
 There are two custom status codes which are specific to this interface:
 
 * **480** - The client (i.e. client-side implementation of this API) is old and not supported any more. Relying Party must contact customer support.
-
 * **580** - System is under maintenance, retry later.
 
 ### Response on successful session creation
@@ -186,7 +158,6 @@ This method initiates a certificate (device) choice dialogue on end user's devic
 ### Preconditions
 
 * User identified in the request (either by PNO identifier or document number) is present in the system.
-
 * User has certificate(s) with level which is equal to or higher than the level requested.
 
 ### Postconditions
@@ -196,9 +167,7 @@ This method initiates a certificate (device) choice dialogue on end user's devic
 ### Error conditions
 
 * HTTP error code 403 - Relying Party has no permission to issue the request. This may happen when:
-* Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
-
-
+  * Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
 * HTTP error code 404 - object described in URL was not found, essentially meaning that the user does not have account in Smart-ID system.
 
 ### Request parameters
@@ -233,7 +202,6 @@ It selects user's authentication key as the one to be used in the process.
 ### Preconditions
 
 * User identified in the request (either by PNO identifier or document number) is present in the system.
-
 * User (as limited by the previous point) has at least one account with given or higher certificate level.
 
 ### Postconditions
@@ -243,9 +211,7 @@ It selects user's authentication key as the one to be used in the process.
 ### Error conditions
 
 * HTTP error code 403 - Relying Party has no permission to issue the request. This may happen when:
-* Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
-
-
+  * Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
 * HTTP error code 404 - object described in URL was not found, essentially meaning that the user does not have account in Smart-ID system.
 
 ### Authentication request parameters
@@ -287,33 +253,22 @@ This method is the main entry point to signature logic.
 There are two main modes of signature operation and Relying Party must choose carefully between them. They look like the ones used in case of authentication, but there are important differences.
 
 * **Signature by document number.** This is the main and common usage scenario. Document number can be obtained from result of certificate choice operation or authentication result. It is vitally important that signatures using any of the *AdES signature schemes that include certificate as part of signature use this method. Otherwise, the signature may be given by the person specified, but not using the key pair corresponding to the certificate chosen by Relying Party.
-
 * **Signature by person's identifier.** This method should only be used if it is acceptable that the end user gives the signature using any of the Smart-ID devices at his/her possession (which is normally not the case).
 
 ### Preconditions
 
 * User identified in the request (either by PNO identifier or document number) is present in the system.
-
 * User (as limited by the previous point) has at least one account with given or higher certificate level.
-
 * RP knows the user's signing certificate related to particular document, if needed by signature scheme.
-
- 
 
 ### Postconditions
 
 * A new RP request request and a related transaction record has been created.
 
- 
-
 ### Error conditions
 
- 
-
 * HTTP error code 403 - Relying Party has no permission to issue the request. This may happen when:
-* Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
-
-
+ * Relying Party has no permission to invoke operations on accounts with ADVANCED certificates.
 * HTTP error code 404 - object described in URL was not found, essentially meaning that the user does not have account in Smart-ID system.
 
 ### Request parameters 
@@ -416,11 +371,8 @@ QUALIFIED - Used for Smart-ID. This means that issued certificate is qualified.
 # Session end result codes
 
 * **OK** - session was completed successfully, there is a certificate, document number and possibly signature in return structure.
-
 * **USER_REFUSED** - user refused the session.
-
 * **TIMEOUT** - there was a timeout, i.e. end user did not confirm or refuse the operation within given timeframe.
-
 * **DOCUMENT_UNUSABLE** - for some reason, this RP request cannot be completed. User must either check his/her Smart-ID mobile application or turn to customer support for getting the exact reason.
 
 
@@ -468,13 +420,9 @@ The VC value must be displayed to the user in the browser together with a messag
 After receiving the transaction response from the getRequestResult() API call, the following algorithm must be used to decide, if the authentication result is trustworthy and what is the identity of the authentication end user.
 
 * "result.endResult" has the value "OK"
-
 * "signature.value" is the valid signature over the same "hash", which was submitted by the RP.
-
 * "signature.value" is the valid signature, verifiable with the public key inside the certificate of the user, given in the field "cert.value"
-
 * The person's certificate given in the "cert.value" is valid (not expired, signed by trusted CA and with correct (i.e. the same as in response structure, greater than or equal to that in the original request) level).
-
 * The identity of the authenticated person is in the 'subject' field of the included X.509 certificate.
 
 After successful authentication, the RP must invalidate the old user's browser or API session identifier and generate a new one.
@@ -483,4 +431,12 @@ After successful authentication, the RP must invalidate the old user's browser o
 
 # Known issues
 
+# This repo / TODO
 
+Should be automated:
+- header counts
+Should not be automated:
+- two lists in one chapter are numbered
+IDK if should be automated:
+- images
+- i might shoot myself before i get table creation to work in a fully automated way
